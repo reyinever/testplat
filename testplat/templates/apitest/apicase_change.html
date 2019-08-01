@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+
+{% block title %}修改用例{% endblock title %}
+
+{% block headappend %}
+    <script type="text/javascript">
+        $(function(){
+            // 给模块管理菜单 添加 current 属性
+            $('.apicase').addClass('current');
+
+            //加载产品名称下拉列表框的数据
+            $.ajax({
+                'url':'/module/get_product_names/',
+                'type':'get',
+                'dataType':''
+            }).done(function(data){
+                //请求成功
+                res=data.data;
+                //alert(res);
+                if(res == '0'){
+                    console.log('还没有添加产品噢！');
+                }else{
+                    var product_name=$('#product_name');
+                    //product_name.empty();
+                    //加载产品名称
+                    $.each(res,function(index,item){
+                        id=item[0];
+                        pro_name=item[1];
+                        pro_name_str='<option value="'+id+'">'+pro_name+'</option>';
+                        product_name.append(pro_name_str);
+                    })
+                    var pid=$('.invisible_pid').html();
+                    //alert(typeof (pid));
+                    //alert(pid);
+                    if(pid){
+                        //设置产品名称选项
+                        product_name.val(pid);
+                        var mid=$('.invisible_mid').html();
+                        //alert(mid);
+                        if(mid) {
+                            $.ajax({
+                                'url':'/apitest/pid'+pid+'/module_names/',
+                                'type':'get'
+                            }).done(function(data){
+                                res=data.data;
+                                $('#module_name').empty();
+                                $('#module_name').append('<option value="default">---请选择模块---</option>');
+                                //加载模块名称
+                                if(res!=0){
+                                    $.each(res,function(index,item){
+                                        mmid=item[0];
+                                        mmname=item[1];
+                                        mmname_str='<option value="'+mmid+'">'+mmname+'</option>';
+                                        $('#module_name').append(mmname_str);
+                                    });
+                                    //设置模块名称选项
+                                    $('#module_name').val(mid);
+                                }
+
+                            }).fail(function(data){
+                                console.log('初始化页面加载模块，获取模块名称失败');
+                            });
+
+                        }else{
+                            module_name.val('default');
+                        }
+
+                    }else{
+                        product_name.val('default');
+                    }
+
+                }
+            }).fail(function (data) {
+                console.log('获取产品名称失败！');
+            });
+
+            //设置修改前的 请求方式
+            var method_before=$('.invisible_method').html().trim();
+            //alert(method_before);
+            $('.apicase_method[value="'+method_before+'"]').click();
+
+            //设置修改前的 是否执行
+            var execute_befor=$('.invisible_execute').html().trim();
+            //alert(execute_befor);
+            if(execute_befor == 'True'){
+                $('#apicase_execute_radio1').click()
+            }else{
+                $('#apicase_execute_radio2').click()
+            }
+
+
+             //选择产品名称时 获取 模块名称
+            $('#product_name').change(function(){
+                pid=$('#product_name').val();
+                //alert(pid);
+                $.ajax({
+                    'url':'/apitest/pid'+pid+'/module_names/',
+                    'type':'get',
+                    'dataType':'json',
+
+                }).done(function(data){
+                    res=data.data;
+                    $('#module_name').empty();
+                    $('#module_name').append('<option value="default">---选择模块---</option>')
+                    if(res!='0'){
+                        $.each(res,function(index,item){
+                            mid=item[0];
+                            mname=item[1];
+                            mname_str='<option value="'+mid+'">'+mname+'</option>';
+                            $('#module_name').append(mname_str);
+
+                    })
+
+                    }
+
+                }).fail(function(data){
+                    console.log('获取模块名称失败！');
+                });
+
+            });
+
+            // 修改 点击事件
+            $('#change').click(function () {
+                //获取输入的字段
+                var product_id=$('#product_name').val();
+                var module_id=$('#module_name').val();
+                //alert(module_id);
+                var apicase_id=$('.invisible_acid').html();
+                //alert('mid:'+module_id);
+                var apicase_name=$('#apicase_name').val()
+                var apicase_desc=$('#apicase_desc').val();
+                var apicase_url=$('#apicase_url').val();
+                var apicase_method=$('.apicase_method:checked').val();
+                var apicase_head=$('#apicase_head').val();
+                var apicase_param=$('#apicase_param').val();
+                var apicase_relydata=$('#apicase_relydata').val();
+                //获取选中的单选按钮的值
+                var apicase_execute=$('.apicase_execute:checked').val();
+                //alert(apicase_execute);
+                var apicase_assert=$('#apicase_assert').val();
+                var apicase_needstore=$('#apicase_needstore').val();
+                var apicase_others=$('#apicase_others').val();
+                //alert(product_id);
+                //发送ajax请求
+                $.ajax({
+                    'url':'/apitest/apicase/change_check/',
+                    'type':'post',
+                    'dataType':'json',
+                    'data':{
+                        product_id:product_id,
+                        module_id:module_id,
+                        apicase_id:apicase_id,
+                        apicase_name:apicase_name,
+                        apicase_desc:apicase_desc,
+                        apicase_url:apicase_url,
+                        apicase_method:apicase_method,
+                        apicase_head:apicase_head,
+                        apicase_param:apicase_param,
+                        apicase_relydata:apicase_relydata,
+                        apicase_execute:apicase_execute,
+                        apicase_assert:apicase_assert,
+                        apicase_needstore:apicase_needstore,
+                        apicase_others:apicase_others
+                        }
+                }).done(function (data) {
+                    data=data.data;
+                    //alert('请求成功,响应结果：'+data.code+';'+data.message);
+                    //console.log('请求成功,响应结果：'+data.code+';'+data.message);
+                    //alert(data.code);
+
+                    if(data.code == '0'){
+                        console.log('修改用例失败');
+                        console.log('显示：错误提示信息');
+                        $('#res_message').html(data.message);  //2
+                        $('#res_message').css({"color":"red","display":"block"});  //2
+
+                        // 定时器 隐藏提示信息
+                       var timer=setTimeout(function(){
+                            $('#res_message').hide();
+                            clearTimeout(timer);
+                        },1000)
+
+                    }else{
+                        console.log('修改用例成功');
+                        console.log('显示：提示信息');
+
+                        $('#res_message').html(data.message);
+                        $('#res_message').css({'color':'green','display':'block'});
+
+                        // 只执行一次的定时器
+                        var timer=setTimeout(function(){
+                            $('#res_message').hide();   //2
+                            clearTimeout(timer);
+                        },2000)
+
+                    }
+
+                }).fail(function (data) {
+                    alert('请求失败,请稍后再试！');
+                    //alert(data);
+                    console.log(data);
+                })
+
+            });
+
+            // 清空 点击清空输入框内容
+            $('#clear').click(function(){
+                //alert($('#product_name').val())
+                //alert('reset');
+                $('#product_name').val('default');
+                $('#module_name').val('default');
+                $('#apicase_name').val('');
+                $('#apicase_desc').val('');
+                $('#apicase_url').val('');
+                $('#apicase_method_radio1').click();
+                //alert($('.apicase_method:checked').val());
+                $('.apicase_method_')
+                $('#apicase_head').val('');
+                $('#apicase_param').val('');
+                $('#apicase_relaydata').val('');
+                //获取选中的单选按钮的值
+                //alert($('.apicase_execute:checked').val());
+                //设置单选按钮被选中
+                $('#apicase_execute_radio1').click();
+                //alert($('.apicase_execute:checked').val());
+                $('#apicase_assert').val('');
+                $('#apicase_needstore').val('');
+                $('#apicase_storedata').val('');
+                $('#apicase_others').val('');
+            })
+
+        })
+    </script>
+
+    <style type="text/css">
+
+        .menu-level2 li {
+            display: block;
+        }
+
+        .input-text{
+            background-color:#171c28 ;
+            color:white;
+            border: 1px solid grey;
+        }
+
+        label{
+            text-align: right;
+        }
+
+
+    </style>
+{% endblock headappend %}
+
+{% block content %}
+    <div class="container" style="margin-top: 40px">
+
+        <div class="invisible_pid" style="display: none">{{ apicase.product_id.id }}</div>
+        <div class="invisible_mid" style="display: none">{{ apicase.module_id.id }}</div>
+        <div class="invisible_acid" style="display: none">{{ apicase.id }}</div>
+
+        <div class="form-group">
+
+            <label class="col-sm-4 control-label" for="product_name">产品名称：</label>
+            <div class="col-sm-4">
+                <select id="product_name" style="background-color: #171c28;font-size: 14px">
+                    <option value="default">---选择产品---</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/product/add/" style="color:#5bc0de;font-weight: bold;">+&nbsp;&nbsp;添加产品</a>
+            </div>
+
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="module_name">模块名称：</label>
+            <div class="col-sm-4">
+                <select id="module_name" style="background-color: #171c28;font-size: 14px">
+                    <option value="default">---选择模块---</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/module/add/" style="color:#5bc0de;font-weight: bold;">+&nbsp;&nbsp;添加模块</a>
+            </div>
+
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_name">用例名称：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_name" name="apicase_name" value="{{ apicase.apicase_name }}" autofocus="" required="" type="text" placeholder="用例名称">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_desc">用例描述：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_desc" name="apicase_desc" value="{{ apicase.apicase_desc }}" autofocus="" type="text" placeholder="用例描述">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_url">请求地址：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_url" name="apicase_url" value="{{ apicase.apicase_url }}" autofocus="" type="text" placeholder="请求地址">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_method">请求方式：</label>
+
+            <div class="invisible_method" style="display: none">{{ apicase.apicase_method }}</div>
+
+            <div class="col-sm-4">
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_method" name="apicase_method" id="apicase_method_radio1" value="get" checked> get
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_method" name="apicase_method" id="apicase_method_radio2" value="post">post
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_method" name="apicase_method" id="apicase_method_radio3" value="put">put
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_method" name="apicase_method" id="apicase_method_radio4" value="patch">patch
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_method" name="apicase_method" id="apicase_execute_radio5" value="delete">delete
+                </label>
+
+{#                <input class="form-control input-text" id="apicase_method" name="apicase_method" autofocus="" type="text" placeholder="请求方式">#}
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_head">请求头信息：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_head" name="apicase_head" value="{{ apicase.apicase_head }}" autofocus="" type="text" placeholder="请求头信息">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_param">请求参数：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_param" name="apicase_param" value="{{ apicase.apicase_param }}" autofocus="" type="text" placeholder="请求参数">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_relydata">依赖数据：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_relydata" name="apicase_relydata" value="{{ apicase.apicase_relydata }}" autofocus="" type="text" placeholder="依赖数据">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="radio-group">
+            <label class="col-sm-4 control-label">是否执行：</label>
+
+            <div class="invisible_execute" style="display: none">{{ apicase.apicase_execute }}</div>
+
+            <div class="col-sm-4">
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_execute" name="apicase_execute" id="apicase_execute_radio1" value="1" checked="checked"> 执行
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apicase_execute" name="apicase_execute" id="apicase_execute_radio2" value="0"> 不执行
+                </label>
+            </div>
+
+{#            <div class="col-sm-4">#}
+{#                <input class="" id="radio1" name="radio" value="1" type="radio" checked="checked"><label for="radio1">&nbsp;&nbsp;执行</label>#}
+{#                &nbsp;&nbsp;&nbsp;&nbsp;#}
+{#                <input class="bg-info" id="radio2" name="radio" value="0" type="radio" style="background-color: red;"><label for="radio2">&nbsp;&nbsp;不执行</label>#}
+{#            </div>#}
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_assert">断言：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_assert" name="apicase_assert" value="{{ apicase.apicase_assert }}" autofocus="" type="text" placeholder="断言">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_needstore">需要存储：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_needstore" name="apicase_needstore" value="{{ apicase.apicase_needstore }}" autofocus="" type="text" placeholder="需要存储">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apicase_others">其他信息：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apicase_others" name="apicase_others" value="{{ apicase.apicase_others }}" autofocus="" type="text" placeholder="其他信息">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4"></label>
+            <div id="res_message" class="col-sm-4">
+                {{ res_message }}
+            </div>
+        </div>
+
+        <br/>
+
+
+        <div class="form-group">
+            <div class="col-sm-11" style="text-align: center">
+                <button class="btn btn-info" type="button" id="change">修改</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-info" type="button" id="clear">清空</button>
+            </div>
+        </div>
+
+        <br/>
+
+    </div>
+
+{% endblock content %}

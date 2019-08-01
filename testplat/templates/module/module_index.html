@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}自动化测试平台--模块管理{% endblock title %}
+
+{% block headappend %}
+    <script type="text/javascript">
+
+        $(function(){
+
+            //当前的菜单
+            $('.module').addClass('current');
+
+            //删除 点击事件
+            $('.delete').click(function () {
+                //alert('delete');
+                var isdelete=confirm('删除后将无法恢复，请谨慎操作，确认删除？');
+                if(isdelete==true){
+                    //获取模块id
+                    var mid=$(this).parent().siblings().filter('.id').html();
+                    var mname=$(this).parent().siblings().filter('.name').html();
+                    //alert(mid+','+mname);
+                    //发送ajax 执行删除操作
+                    $.ajax({
+                        'url': '/module/delete/',
+                        'type': 'post',
+                        'dataType': 'json',
+                        'data':{'id':mid,'name':mname}
+                    }).done(function(data){
+                        data=data.data
+                        alert(data.message);  //显示响应描述
+                        window.location.reload();//刷新页面
+                    }).fail(function (data) {
+                        alert('删除失败，请稍后重试！');
+                    })
+
+                }
+
+            })
+
+
+        })
+
+    </script>
+
+    <style type="text/css">
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color:#292c39;
+        }
+
+        .table>thead>tr>th{
+             border-bottom-color:grey;
+        }
+
+        .table>tbody>tr>td{
+            border-top-color:grey;
+        }
+
+
+    </style>
+{% endblock headappend %}
+
+{% block content %}
+
+
+{#搜索功能#}
+
+    <div class="container " style="margin-left:20%;">
+        <div style="float: left;">
+            <form class="form-inline" method="get" action="/module/search/">
+                <div class="form-group">
+                    <input type="text" class="form-control col-sm-2" name="module_name" required="" placeholder="模块名称" style="background-color: #171c28;border:1px solid grey;color:white">
+                </div>
+                <button type="submit" class="btn btn-info">查找</button>
+            </form>
+        </div>
+        <div style="float:right; margin-right: 50%">
+            <a href="/module/add/"><button type="button" class="btn btn-info">新增</button></a>
+        </div>
+
+    </div>
+
+
+{#产品信息列表#}
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" style="margin-top: 20px;color: white;">
+                <thead>
+                    <tr>
+                        <th>模块ID</th>
+                        <th>产品名称</th>
+                        <th>模块名称</th>
+                        <th>模块描述</th>
+                        <th>开发人员</th>
+                        <th>测试负责人</th>
+                        <th>创建时间</th>
+                        <th>查看</th>
+                        <th>修改</th>
+                        <th>删除</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for module in modules %}
+                    <tr>
+                        <td class="id">{{ module.id }}</td>
+                        <td>{{ module.product_id.product_name }}</td>
+                        <td class="name">{{ module.module_name }}</td>
+                        <td>{{ module.module_desc }}</td>
+                        <td>{{ module.module_dev }}</td>
+                        <td>{{ module.module_tst }}</td>
+                        <td>{{ module.create_time }}</td>
+                        <td>
+                            <a href="/module/detail/{{ module.id }}">
+                                <img src="/static/admin/img/icon-yes.svg">
+                            </a>
+                        </td>
+                        <td>
+                            <a style="color:lightblue;" class="change" href="/module/change/{{ module.id }}/">
+                                <img src="/static/admin/img/icon-changelink.svg">
+                            </a>
+                        </td>
+                        <td>
+                            <a style="color:lightblue" href="#" class="delete">
+{#                                href="/product/delete/{{ product.id }}/"#}
+                                <img src="/static/admin/img/icon-deletelink.svg">
+                            </a>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <br/>
+    <div class="container" style="text-align: center;color:red">
+    {{ err_msg }}
+    </div>
+
+
+    <div style="text-align: center">
+
+        <!-- 统计功能 -->
+        <!--
+        <div style="color:#337ab7">
+            共&nbsp;{{ modules_count }}&nbsp;条数据&nbsp;&nbsp;
+        </div>
+        -->
+
+        <!-- 翻页功能 -->
+        <div style="text-align: center;vertical-align: center">
+
+        <a class="countnum" style="font-size:16px;color:white;">共&nbsp;{{ modules_count }}&nbsp;条数据&nbsp;&nbsp;</a>
+
+            <ul class="pagination" id="pager">
+
+                <!-- 上一页链接 -->
+                {% if modules.has_previous %}
+                    <!-- 如果有上一页，正常展示上一页链接 -->
+                    <li class="previous">
+                        <a href="/module/index/?page={{ modules.previous_page_number }}">上一页</a>
+                    </li>
+                {% else %}
+                    <!-- 如果没有，不跳转 -->
+                    <li class="previous disabled">
+{#                        <a href="#">上一页</a>#}
+                        &nbsp;&nbsp;
+                    </li>
+                {% endif %}
+
+                <!-- 当前页 -->
+                {% for num in modules.paginator.page_range %}
+                    {% if num == modules.number %}
+                        <li class="item  active">
+                            <a href="#">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="item">
+                            <a href="/module/index/?page={{ num }}">{{ num }}</a>
+                            &nbsp;&nbsp;
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- 下一页 -->
+                {% if modules.has_next %}
+                    <li class="next">
+                        <a href="/module/index/?page={{ modules.next_page_number }}">下一页</a>
+                    </li>
+                {% else %}
+                    <li class="next disabled">
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+
+    </div>
+
+{% endblock content %}

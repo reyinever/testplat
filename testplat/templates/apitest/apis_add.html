@@ -1,0 +1,409 @@
+{% extends 'base.html' %}
+
+{% block title %}新增流程{% endblock title %}
+
+{% block headappend %}
+    <script type="text/javascript">
+        $(function(){
+            // 给模块管理菜单 添加 current 属性
+            $('.apistest').addClass('current');
+
+            //加载产品名称下拉列表框的数据
+            $.ajax({
+                'url':'/module/get_product_names/',
+                'type':'get',
+                'dataType':''
+            }).done(function(data){
+                //请求成功
+                res=data.data;
+                //alert(res);
+                if(res == '0'){
+                    console.log('还没有添加产品噢！');
+                }else{
+                    var product_name=$('#product_name');
+                    //product_name.empty();
+                    $.each(res,function(index,item){
+                        id=item[0];
+                        pro_name=item[1];
+                        pro_name_str='<option value="'+id+'">'+pro_name+'</option>';
+                        product_name.append(pro_name_str);
+                    })
+                }
+            }).fail(function (data) {
+                console.log('获取产品名称失败！');
+            });
+
+            //加载模块名称下拉列表框的数据  所有模块名称
+            $.ajax({
+                'url':'/apitest/get_module_names/',
+                'type':'get',
+                'dataType':''
+            }).done(function(data){
+                //请求成功
+                res=data.data;
+                //alert(res);
+                if(res == '0'){
+                    console.log('还没有添加模块噢！');
+                }else{
+                    var module_name=$('#module_name');
+                    //product_name.empty();
+                    $.each(res,function(index,item){
+                        id=item[0];
+                        mod_name=item[1];
+                        mod_name_str='<option value="'+id+'">'+mod_name+'</option>';
+                        module_name.append(mod_name_str);
+                    })
+                }
+            }).fail(function (data) {
+                console.log('获取模块名称失败！');
+            });
+
+
+            //选择产品名称时 获取 模块名称
+            $('#product_name').change(function(){
+                pid=$('#product_name').val();
+                $.ajax({
+                    'url':'/apitest/pid'+pid+'/module_names/',
+                    'type':'get',
+                    'dataType':'json',
+
+                }).done(function(data){
+                    res=data.data;
+                    $('#module_name').empty();
+                    $('#module_name').append('<option value="default">---选择模块---</option>')
+                    if(res!='0'){
+                        $.each(res,function(index,item){
+                            mid=item[0];
+                            mname=item[1];
+                            mname_str='<option value="'+mid+'">'+mname+'</option>';
+                            $('#module_name').append(mname_str);
+
+                    })
+
+                    }
+
+                }).fail(function(data){
+                    console.log('获取模块名称失败！');
+                });
+
+            });
+
+
+            //选择模块名称时 获取 用例名称
+            $('#module_name').change(function(){
+                pid=$('#product_name').val();
+                if (pid=='' || pid=='default'){
+                    alert('请先选择产品名称！');
+                }else {
+
+                    mid = $('#module_name').val();
+                    //alert('pid'+pid+',mid'+mid);
+                    $.ajax({
+                        'url': '/apitest/apis/pid' + pid + '/mid' + mid + '/case_names/',
+                        'type': 'get',
+                        'dataType': 'json',
+
+                    }).done(function (data) {
+                        res = data.data;
+                        $('#case_name').empty();
+                        $('#case_name').append('<option value="default">---选择用例---</option>')
+                        if (res != '0') {
+                            $.each(res, function (index, item) {
+                                cid = item[0];
+                                cname = item[1];
+                                cname_str = '<option value="' + cid + '">' + cname + '</option>';
+                                $('#case_name').append(cname_str);
+
+                            })
+
+                        }
+
+                    }).fail(function (data) {
+                        console.log('获取模块名称失败！');
+                    });
+
+                }
+
+                });
+
+
+            // 添加用例到流程
+            $('#add_case').click(function () {
+                // 获取选中的值
+                cid=$('#case_name').val();
+                // 获取选中的值 的文本
+                cname=$('#case_name').find('option:selected').text()
+                //alert(cid+','+cname);
+
+                //判断是否已添加
+                if($('#executecase_name').val().indexOf(cname)>=0){
+                    alert('添加的用例已存在，不允许重复添加！')
+                }else{
+
+                    //添加用例到已选用例中
+                    if ($('#executecase_name').val()){
+                        $('#executecase_name').val($('#executecase_name').val()+'、'+cname)
+                    }else{
+                        $('#executecase_name').val($('#executecase_name').val()+cname)
+                    }
+
+                }
+
+            });
+
+
+            //清空已选的用例
+            $('#delete_all').click(function(){
+                $('#executecase_name').val('');
+            });
+
+
+
+            // 新增 点击事件
+            $('#add').click(function () {
+                //获取输入的字段
+                var product_id=$('#product_name').val();
+                var module_id=$('#module_name').val();
+                //alert('mid:'+module_id);
+                var executecase=$('#executecase_name').val();
+                var apis_name=$('#apis_name').val();
+                var apis_desc=$('#apis_desc').val();
+                //获取选中的单选按钮的值
+                var apis_execute=$('.apis_execute:checked').val();
+                var apis_others=$('#apis_others').val();
+
+                //发送ajax请求
+                $.ajax({
+                    'url':'/apitest/apis/add_check/',
+                    'type':'post',
+                    'dataType':'json',
+                    'data':{
+                        product_id:product_id,
+                        module_id:module_id,
+                        executecase:executecase,
+                        apis_name:apis_name,
+                        apis_desc:apis_desc,
+                        apis_execute:apis_execute,
+                        apis_others:apis_others
+                        }
+                }).done(function (data) {
+                    data=data.data;
+                    //alert('请求成功,响应结果：'+data.code+';'+data.message);
+                    console.log('请求成功,响应结果：'+data.code+';'+data.message);
+                    //alert(data.code);
+
+                    if(data.code == '0'){
+                        console.log('添加流程失败');
+                        //console.log('显示：错误提示信息')
+
+                        $('#res_message').html(data.message);
+                        $('#res_message').css({"color":"red","display":"block"});
+
+                        var timer=setTimeout(function(){
+                            $('#res_message').hide();
+                            clearTimeout(timer);
+                        },1000)
+
+                    }else{
+                        console.log('添加流程成功');
+                        //console.log('显示：提示信息')
+
+                        $('#res_message').html(data.message);
+                        $('#res_message').css({'color':'green','display':'block'});
+
+                        // 清空输入框
+
+                        // 只执行一次的定时器
+                        var timer=setTimeout(function(){
+
+                            $('#res_message').hide();
+                            clearTimeout(timer);
+                        },2000)
+
+                    }
+
+                }).fail(function (data) {
+                    alert('请求失败,请稍后再试！');
+                    //alert(data);
+                    console.log(data);
+                })
+
+            });
+
+            //重置 点击清空输入框内容
+            $('#reset').click(function(){
+                //alert($('#product_name').val())
+                //alert('reset');
+                $('#product_name').val('default');
+                $('#module_name').val('default');
+                $('#case_name').val('default');
+                $('#executecase_name').val('');
+                $('#apis_name').val('');
+                $('#apis_desc').val('');
+                $('#apis_execute_radio1').click();
+                //alert($('.apicase_method:checked').val());
+                $('#apis_others').val('');
+            })
+
+
+        })
+    </script>
+
+    <style type="text/css">
+
+        .menu-level2 li {
+            display: block;
+        }
+
+        .input-text{
+            background-color:#171c28 ;
+            color:white;
+            border: 1px solid grey;
+        }
+
+        label{
+            text-align: right;
+        }
+
+
+    </style>
+{% endblock headappend %}
+
+{% block content %}
+    <div class="container" style="margin-top: 40px">
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="product_name">产品名称：</label>
+            <div class="col-sm-4">
+                <select id="product_name" style="background-color: #171c28;font-size: 14px">
+                    <option value="default">---选择产品---</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/product/add/" style="color:#5bc0de;font-weight: bold;">+&nbsp;&nbsp;添加产品</a>
+            </div>
+
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="module_name">模块名称：</label>
+            <div class="col-sm-4">
+                <select id="module_name" style="background-color: #171c28;font-size: 14px">
+                    <option value="default">---选择模块---</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/module/add/" style="color:#5bc0de;font-weight: bold;">+&nbsp;&nbsp;添加模块</a>
+            </div>
+
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="case_name">用例名称：</label>
+            <div class="col-sm-4">
+                <select id="case_name" style="background-color: #171c28;font-size: 14px">
+                    <option value="default">---选择用例---</option>
+                </select>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="/apitest/apicase/add/" style="color:#5bc0de;font-weight: bold;">+&nbsp;&nbsp;添加用例</a>
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <div class="col-sm-4" style="text-align: center">
+            </div>
+            <div class="col-sm-4" style="text-align: left">
+                <button class="btn btn-info" type="button" id="add_case">添加用例到流程</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-info" type="button" id="delete_all">清空已选用例</button>
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="executecase_name">已选用例：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="executecase_name" name="executecase_name" autofocus="" required="" type="text" placeholder="已选用例">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apis_name">流程名称：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apis_name" name="apis_name" autofocus="" required="" type="text" placeholder="流程名称">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apis_desc">流程描述：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apis_desc" name="apis_desc" autofocus="" type="text" placeholder="流程描述">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="radio-group">
+            <label class="col-sm-4 control-label">是否执行：</label>
+            <div class="col-sm-4">
+                <label class="radio-inline">
+                    <input type="radio" class="apis_execute" name="apis_execute" id="apis_execute_radio1" value="1" checked="checked"> 执行
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" class="apis_execute" name="apis_execute" id="apis_execute_radio2" value="0"> 不执行
+                </label>
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4 control-label" for="apis_others">其他信息：</label>
+            <div class="col-sm-4">
+                <input class="form-control input-text" id="apis_others" name="apis_others" autofocus="" type="text" placeholder="其他信息">
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <label class="col-sm-4"></label>
+            <div id="res_message" class="col-sm-4">
+                {{ res_message }}
+            </div>
+        </div>
+
+        <br/>
+        <br/>
+
+        <div class="form-group">
+            <div class="col-sm-11" style="text-align: center">
+                <button class="btn btn-info" type="button" id="add">新增</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button class="btn btn-info" type="button" id="reset">重置</button>
+            </div>
+        </div>
+
+        <br/>
+
+    </div>
+
+{% endblock content %}

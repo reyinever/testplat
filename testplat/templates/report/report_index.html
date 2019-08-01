@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}自动化测试平台--测试报告{% endblock title %}
+
+{% block headappend %}
+    <script type="text/javascript">
+
+        $(function(){
+
+            //当前的菜单
+            $('.testreport').addClass('current');
+
+            //删除 点击事件
+            $('.delete').click(function () {
+                //alert('delete');
+                var isdelete=confirm('删除后将无法恢复，请谨慎操作，确认删除？');
+                if(isdelete==true){
+                    //获取模块id
+                    var apicase_id=$(this).parent().siblings().filter('.id').html();
+                    var apicase_name=$(this).parent().siblings().filter('.name').html();
+                    //alert(apicase_id+','+apicase_name);
+                    //发送ajax 执行删除操作
+                    $.ajax({
+                        'url': '/apitest/apicase/delete/',
+                        'type': 'post',
+                        'dataType': 'json',
+                        'data':{'id':apicase_id,'name':apicase_name}
+                    }).done(function(data){
+                        data=data.data
+                        alert(data.message);  //显示响应描述
+                        window.location.reload();//刷新页面
+                    }).fail(function (data) {
+                        alert('删除失败，请稍后重试！');
+                    })
+
+                }
+
+            })
+
+
+        })
+
+    </script>
+
+    <style type="text/css">
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color:#292c39;
+        }
+
+        .table>thead>tr>th{
+             border-bottom-color:grey;
+        }
+
+        .table>tbody>tr>td{
+            border-top-color:grey;
+        }
+
+        .countnum{
+            vertical-align: -webkit-baseline-middle;
+        }
+
+
+    </style>
+{% endblock headappend %}
+
+{% block content %}
+
+
+{#搜索功能#}
+
+    <div class="container " style="margin-left:20%;">
+        <div style="float: left;">
+            <form class="form-inline" method="get" action="/report/search/">
+                <div class="form-group">
+                    <input type="text" class="form-control col-sm-2" name="report_name" required="" placeholder="报告名称" style="background-color: #171c28;border:1px solid grey;color:white">
+                </div>
+                <button type="submit" class="btn btn-info">查找</button>
+            </form>
+        </div>
+        <div style="float:right; margin-right: 50%">
+
+        </div>
+
+    </div>
+
+
+{#用例信息列表#}
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-striped" style="margin-top: 20px;color: white;">
+                <thead>
+                    <tr>
+                        <th>报告ID</th>
+                        <th>报告名称</th>
+                        <th>报告描述</th>
+                        <th>执行用例总数</th>
+                        <th>成功用例数</th>
+                        <th>失败用例数</th>
+                        <th>创建时间</th>
+                        <th>查看详情</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for report in reports %}
+                    <tr>
+                        <td class="id">{{ report.id }}</td>
+{#                        <td>{{ report.product_id.product_name }}</td>#}
+{#                        <td>{{ report.module_id.module_name }}</td>#}
+                        <td class="name">{{ report.name }}</td>
+                        <td>{{ report.desc }}</td>
+                        <td>{{ report.total }}</td>
+                        <td><a style="color:greenyellow"> {{ report.success }}</a></td>
+                        <td><a style="color:red">{{ report.fail }}</a></td>
+                        <td>{{ report.create_time }}</td>
+                        <td>
+                            <a style="color:gold" href="/report/testReport/{{ report.detail }}/">{{ report.detail }}.html</a>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+    <br/>
+    <div class="container" style="text-align: center;color:red">
+    {{ err_msg }}
+    </div>
+
+
+    <div style="text-align: center">
+
+
+        <!-- 翻页功能 -->
+        <div style="text-align: center;vertical-align: center">
+
+        <a class="countnum" style="font-size:16px;color:white;">共&nbsp;{{ report_count }}&nbsp;条数据&nbsp;&nbsp;</a>
+
+            <ul class="pagination" id="pager">
+
+                <!-- 上一页链接 -->
+                {% if reports.has_previous %}
+                    <!-- 如果有上一页，正常展示上一页链接 -->
+                    <li class="previous">
+                        <a href="/report/index/?page={{ reports.previous_page_number }}">上一页</a>
+                    </li>
+                {% else %}
+                    <!-- 如果没有，不跳转 -->
+                    <li class="previous disabled">
+{#                        <a href="#">上一页</a>#}
+                        &nbsp;&nbsp;
+                    </li>
+                {% endif %}
+
+                <!-- 当前页 -->
+                {% for num in reports.paginator.page_range %}
+                    {% if num == reports.number %}
+                        <li class="item  active">
+                            <a href="#">{{ num }}</a>
+                        </li>
+                    {% else %}
+                        <li class="item">
+                            <a href="/report/index/?page={{ num }}">{{ num }}</a>
+                            &nbsp;&nbsp;
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- 下一页 -->
+                {% if reports.has_next %}
+                    <li class="next">
+                        <a href="/report/index/?page={{ reports.next_page_number }}">下一页</a>
+                    </li>
+                {% else %}
+                    <li class="next disabled">
+{#                        <a href="#">下一页</a>#}
+                    </li>
+                {% endif %}
+
+            </ul>
+        </div>
+
+    </div>
+
+{% endblock content %}

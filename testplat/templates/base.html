@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}自动化测试平台{% endblock title %}</title>
+    <link rel="stylesheet" href="/static/css/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-3.3.7-dist/js/bootstrap.min.js">
+    <script type="text/javascript" src="/static/js/jquery-3.3.1/jquery-3.3.1.min.js"></script>
+
+    <style type="text/css">
+
+        .m-header{
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            font-size: 16px;
+            z-index: 1999;
+            padding-left: 20px;
+            color:white;
+
+        }
+
+        .m-header-menu li{
+            float: left;
+            margin-right: 40px;
+        }
+
+         .m-header-menu,.menu-level1,.menu-level2{
+            list-style: none;
+        }
+
+         .m-header,.m-left {
+            background: #292c39;
+        }
+
+         .m-left-menumenu{
+             list-style: none;
+             margin-top: 20px;
+             padding-inline-start: 0px;
+             {#font-size: 18px;#}
+        }
+          .m-left-menumenu li{
+              margin-top: 20px;
+              font-size: 18px;
+              font-weight: bold;
+        }
+
+        .m-left{
+            position: fixed;
+            top: 50px;
+            {#left:0px;#}
+            bottom: 0;
+            width: 180px;
+            z-index: 1998;
+            overflow-y: auto;
+            overflow-x: hidden;
+            {#font-size: 18px;#}
+            text-align: center;
+
+        }
+
+        .menu-level1,.menu-level2{
+            padding-inline-start: 0px;
+        }
+
+        .menu-level1 li{
+            width:100%;
+            height:100%;
+            padding-left: 0px;
+            margin-top: 20px;
+
+        }
+
+        .menu-level2 li{
+            display: none;
+            text-indent: 40px;
+            font-size: 15px;
+            {#margin-top: 10px;#}
+
+        }
+
+        {#.menu-level2 li{#}
+        {#    margin-top: 10px;#}
+        {#}#}
+
+        .m-right {
+            position: absolute;
+            left: 180px;
+            right: 0;
+            top: 50px;
+            bottom: 0;
+            width: auto;
+            padding: 20px 20px 0;
+            overflow-y: auto;
+            overflow-x: auto;
+            background: #171c28;
+        }
+
+        a{
+            color: white;
+        }
+
+        #m-right{
+            color:white;
+        }
+
+        a.current{
+            color:#5bc0de;
+        }
+
+        a:hover{
+            color:#5bc0de;
+            text-decoration: none;
+        }
+
+        /* 记录条数样式 */
+        .countnum{
+            vertical-align: -webkit-baseline-middle;
+        }
+
+
+    </style>
+
+     <script type="text/javascript">
+
+        $(function () {
+
+        })
+    </script>
+
+{% block headappend %}{% endblock headappend %}
+</head>
+<body style="position: static; overflow: visible;">
+
+<div class="m-header">
+    <div style="position: absolute; height: 100%; width:100%">
+
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/product/index/">自动化测试平台</a>
+                <a class="navbar-brand" href="#">&nbsp;&nbsp;</a>
+            </div>
+
+        <ul class="m-header-menu">
+                <li><a href="/apitest/apicase/">单接口扫描</a> </li>
+                <li><a href="/apitest/apis/">流程接口扫描</a> </li>
+                <li><a href="#">web测试</a> </li>
+                <li><a href="#">app测试</a> </li>
+        </ul>
+
+        <div style="margin-left:70%">
+            <ul class="user-info m-header-menu">
+                <li class="user-info-li"><a href="#">欢迎您{{ username }}!</a> </li>
+                <li class="user-info-li"><a href="/apitest/logout/">退出</a> </li>
+            </ul>
+        </div>
+
+
+    </div>
+
+</div>
+
+<div class="m-left">
+    <ul class="m-left-menumenu">
+        <li><a class="product" href="/product/index/">产品管理</a></li>
+        <li><a class="module" href="/module/index/">模块管理</a></li>
+        <li><a class="casemanage" href="/apitest/index/">测试管理</a></li>
+        <ul class="menu-level2 current">
+                    <li><a class="apitest" href="/apitest/index/">接口管理</a> </li>
+                    <li><a class="apicase" href="/apitest/apicase/">接口用例</a> </li>
+                    <li><a class="apistest" href="/apitest/apis/">流程接口</a> </li>
+                    <li><a class="webtest" href="#">web测试</a> </li>
+                    <li><a class="apptest" href="#">app测试</a> </li>
+        </ul>
+        <li><a class="bugmanage" href="/bug/index/">bug管理</a></li>
+        <li><a class="testreport" href="/report/index/">测试报告</a></li>
+        <li><a class="testtask" href="">计划任务</a></li>
+
+        <li><a href="">&nbsp;</a> </li>
+
+
+        </ul>
+</div>
+
+
+<div id="m-right" class="m-right">
+
+
+    <div >
+
+    </div>
+
+    <div class="content">
+
+        {% block content %}
+        {% endblock content %}
+
+    </div>
+</div>
+
+</body>
+</html>

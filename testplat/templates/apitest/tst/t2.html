@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+
+        .m-header{
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+
+            position: fixed;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+            z-index: 1999;
+            padding-left: 11px;
+
+        }
+
+        .m-sidebar{
+            {#position: fixed;#}
+            {#left: 0;#}
+            {#top: 50px;#}
+            {#bottom: 0;#}
+            {#width: 90px;#}
+            {#z-index: 1998;#}
+            {#overflow: hidden;#}
+            {#transition: all .5s;#}
+            {#-webkit-transition: all .5s;#}
+            position: fixed;
+            {#left: 0;#}
+            top: 50px;
+            bottom: 0;
+            width: 90px;
+            z-index: 1998;
+            {#overflow: hidden;#}
+            transition: all .5s;
+            -webkit-transition: all .5s;
+            overflow-y: auto;
+            overflow-x: hidden;
+
+
+            {#scrollbar-face-color: red;#}
+            {#scrollbar-highlight-color: #2aabd2;#}
+            {#scrollbar-track-color: black;  /*滚动条的背景颜色*/#}
+            {#SCROLLBAR-BASE-COLOR:gold; /* 滚动条的基本颜色自己定义滚动条的颜色*/#}
+
+}
+
+        .m-header,.m-sidebar {
+            background: #292c39;
+        }
+
+        .home-content {
+            position: absolute;
+            left: 90px;
+            right: 0;
+            top: 50px;
+            bottom: 0;
+            width: auto;
+            padding: 20px 20px 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            overflow-y: scroll;
+            background: #171c28;
+            transition: all .5s;
+}
+
+    </style>
+</head>
+<body style="position: static; overflow: visible;">
+
+<div class="m-header"><div style="position: absolute; height: 100%;">
+     <ul  >
+         <li >
+                            线上签约
+         </li>
+     </ul>
+</div>
+</div>
+
+<div class="m-sidebar">
+    <div class="sidebar-con">
+        <ul class="el-menu el-menu-vertical-mode">
+            <li class="el-menu-item is-active" style="padding-left: 20px;"><i class="iconfont icon-shouye"></i> <span class="text">首页</span></li>
+            <li class="el-menu-item" style="padding-left: 20px;"><i class="iconfont icon-xiaoshou"></i> <span class="text">销售</span></li>
+            <li class="el-menu-item" style="padding-left: 20px;"><i class="iconfont icon-shequn"></i> <span class="text">社群</span></li>
+            <li class="el-menu-item" style="padding-left: 20px;"><i class="iconfont icon-fangtai"></i> <span class="text">空间</span></li>
+
+
+
+            <li class="el-menu-item" style="padding-left: 20px;"><i class="iconfont icon-huodongx"></i> <span class="text">活动</span></li>
+            <li class="el-menu-item menu-link is-active" style="padding-left: 20px;">
+                <a href="https://jupiter.youplus.net.cn/#/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjA2OTk0NzAsImlzcyI6IjEwMzg5Iiwic3ViIjoiYXV0aHN2YyJ9.EOJyk6Yg-EI8sAzlXDEX2W2iR28KT1g9WmR1CPYqANk" target="_blank"><i class="iconfont icon-guanwangx"></i> <span class="text">WITH</span></a></li>
+            <li class="el-menu-item menu-link is-active" style="padding-left: 20px;"><a href="http://dev.mpapi.youplus.net.cn/merchant/list/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjA2OTk0NzAsImlzcyI6IjEwMzg5Iiwic3ViIjoiYXV0aHN2YyJ9.EOJyk6Yg-EI8sAzlXDEX2W2iR28KT1g9WmR1CPYqANk" target="_blank"><i class="iconfont icon-guanwangx"></i> <span class="text">生活</span></a></li>
+            <li class="el-menu-item menu-link is-active" style="padding-left: 20px;"><a href="http://testwwwadmin.youplus.net.cn/api/login/sso?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjA2OTk0NzAsImlzcyI6IjEwMzg5Iiwic3ViIjoiYXV0aHN2YyJ9.EOJyk6Yg-EI8sAzlXDEX2W2iR28KT1g9WmR1CPYqANk" target="_blank"><i class="iconfont icon-guanwangx"></i> <span class="text">官网</span></a></li>
+
+
+            </ul>
+    </div>
+</div>
+
+
+<div id="home-content" class="home-content">
+    <div><div class="data-wrap">
+        <dl class="appointment-data clear">
+            <div class="con">
+                <dt><i class="appointment-data-icon"></i></dt>
+                <dd><p>当日预约量</p> <strong>0</strong></dd> <dd><p>当日处理量</p>
+                <strong>0</strong></dd>
+                <dd><p>平均响应时长</p> <strong>--</strong>
+                </dd></div></dl> <dl class="repair-data"><div class="con"><dt><i class="repair-data-icon"></i></dt>
+        <dd><p>当日报修量</p> <strong>0</strong></dd> <dd><p>当日处理量</p> <strong>0</strong></dd> <dd><p>平均响应时长</p> <strong>--</strong></dd></div></dl> <dl class="task-data"><div class="con"><dt><i class="task-data-icon"></i></dt> <dd><p>当日任务总量</p> <strong>0</strong></dd> <dd><p>已处理量</p> <strong>0</strong></dd></div></dl></div> <div class="y_content cf"><div class="wrap left">
+
+
+
+
+        <div class="wrap right"><div class="tab-pane-box index-tab-pane">
+            <div class="el-tabs"><div class="el-tabs__header"><div class="el-tabs__nav-wrap"><div class="el-tabs__nav-scroll"><div class="el-tabs__nav"><div class="el-tabs__active-bar" style="width: 88px; transform: translateX(0px);"></div><div class="el-tabs__item is-active"><span>
+                            销售
+                            <i class="none">0</i></span></div><div class="el-tabs__item"><span>
+                            物业
+                            <i class="none">0</i></span></div><div class="el-tabs__item"><span>
+                            合同
+                            <i class="none">0</i></span></div><div class="el-tabs__item"><span>
+                            财务
+                            <i class="none">0</i></span></div><div class="el-tabs__item"><span>
+                            活动
+                            <i class="none">0</i></span></div><div class="el-tabs__item"><span>
+                            其他
+                            <i class="none">0</i></span></div></div></div><div class="resize-triggers"><div class="expand-trigger"><div style="width: 531px; height: 61px;"></div></div><div class="contract-trigger"></div></div></div></div><div class="el-tabs__content"><div class="el-tab-pane" index="2"></div><div class="el-tab-pane" index="5" style="display: none;"></div><div class="el-tab-pane" index="3" style="display: none;"></div><div class="el-tab-pane" index="4" style="display: none;"></div><div class="el-tab-pane" index="1" style="display: none;"></div><div class="el-tab-pane" index="6" style="display: none;"></div></div></div> <div class="select-btn-group"><div class="el-checkbox-group"><label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" class="el-checkbox__original" value="1"></span><span class="el-checkbox__label">只看自己<!----></span></label> <label class="el-checkbox"><span class="el-checkbox__input"><span class="el-checkbox__inner"></span><input type="checkbox" class="el-checkbox__original" value="2"></span><span class="el-checkbox__label">只看待认领<!----></span></label></div></div></div> <div data-v-61bdf878="" class="new-task-lists-box"><div data-v-61bdf878="" class="new-msg-box" style="display: none;"><a data-v-61bdf878="" href="javascript:;" class="link">任务列表有更新，点击查看</a></div> <div data-v-61bdf878="" class="lists-inner-wrap"><div class="no-data">
+            暂无数据
+        </div> <ul class="box"></ul> <div class="el-dialog__wrapper theme-message" style="display: none;"><div class="el-dialog el-dialog--small" style="top: 50%;"><div class="el-dialog__header"><span class="el-dialog__title">任务分配</span><!----></div><!----><div class="el-dialog__footer"><div class="dialog-footer"><button type="button" class="el-button el-button--default"><!----><!----><span>取消</span></button> <button type="button" class="el-button el-button--primary"><!----><!----><span>确定</span></button></div></div></div></div> <div data-v-2ba43e23="" class="el-dialog__wrapper theme-message thread-b-dialog" style="display: none;"><div class="el-dialog el-dialog--small" style="top: 50%;"><div class="el-dialog__header"><span class="el-dialog__title">催促</span><!----></div><!----><div class="el-dialog__footer"><div data-v-2ba43e23="" class="dialog-footer"><button data-v-2ba43e23="" type="button" class="el-button el-button--default"><!----><!----><span>取消</span></button> <button data-v-2ba43e23="" type="button" class="el-button el-button--primary"><!----><!----><span>确定</span></button></div></div></div></div></div></div></div></div></div></div>
+
+
+
+</body>
+</html>
